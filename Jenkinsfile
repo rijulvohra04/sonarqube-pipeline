@@ -26,18 +26,26 @@ pipeline {
       }
     }
 
+    // ✅ YEH STAGE AAPKI PROBLEM FIX KAR DEGA
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv("${SONARQUBE_NAME}") {
-          // ✅ Galti sudhaar di: Waapas single quotes (''') kar diya hai
-          // Taaki shell SONAR_SCANNER_HOME ko expand kare, Groovy nahi.
-          sh '''
-            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-              -Dsonar.projectKey=cicode-demo \
-              -Dsonar.sources=src \
-              -Dsonar.tests=test \
-              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          '''
+        script {
+          // 1. Jenkins se 'MySonarQube' tool ka path maango
+          def scannerHome = tool 'MySonarQube'
+          
+          // 2. withSonarQubeEnv ko server details ke liye use karo
+          withSonarQubeEnv('MySonarQube') {
+            
+            // 3. sh ko double-quotes (""") mein daalo
+            //    taaki Groovy ${scannerHome} variable ko process kar paaye
+            sh """
+              ${scannerHome}/bin/sonar-scanner \
+                -Dsonar.projectKey=cicode-demo \
+                -Dsonar.sources=src \
+                -Dsonar.tests=test \
+                -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            """
+          }
         }
       }
     }
@@ -57,7 +65,6 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        // Yeh $IMAGE_NAME shell se aayega, jo sahi hai
         sh 'docker build -t $IMAGE_NAME:latest .'
       }
     }
