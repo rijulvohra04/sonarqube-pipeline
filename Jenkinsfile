@@ -1,10 +1,14 @@
 pipeline {
   agent any
 
+  tools {
+    sonarQube 'SonarScanner'       // 👈 this tells Jenkins to use your configured scanner
+  }
+
   environment {
     DOCKERHUB_CREDENTIALS = 'dockerhub-creds'      // Jenkins credentials ID
-    SONARQUBE_NAME = 'MySonarQube'                 // name used in Configure System
-    IMAGE_NAME = 'rijul0408/cicode-demo'   // CHANGE: your dockerhub repo
+    SONARQUBE_NAME = 'MySonarQube'                 // must match SonarQube server name in "Configure System"
+    IMAGE_NAME = 'rijul0408/cicode-demo'           // your DockerHub repo
   }
 
   stages {
@@ -29,15 +33,19 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv("${SONARQUBE_NAME}") {
-          // run sonar-scanner - Jenkins must have SonarQube Scanner installed
-          sh 'sonar-scanner -Dsonar.projectKey=cicode-demo -Dsonar.sources=src -Dsonar.tests=test -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info'
+          sh '''
+            sonar-scanner \
+              -Dsonar.projectKey=cicode-demo \
+              -Dsonar.sources=src \
+              -Dsonar.tests=test \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          '''
         }
       }
     }
 
     stage("Wait For Quality Gate") {
       steps {
-        // waitForQualityGate is provided by SonarQube plugin
         timeout(time: 5, unit: 'MINUTES') {
           script {
             def qg = waitForQualityGate()
@@ -68,7 +76,6 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        // Simple local deployment using docker run (adjust as per your server)
         sh '''
           docker rm -f cicode-demo || true
           docker run -d --name cicode-demo -p 3000:3000 ${IMAGE_NAME}:latest
