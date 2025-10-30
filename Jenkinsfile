@@ -29,14 +29,15 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv("${SONARQUBE_NAME}") {
-          // ✅ Yahan triple-double-quotes """...""" kar diya hai
-          sh """
+          // ✅ Galti sudhaar di: Waapas single quotes (''') kar diya hai
+          // Taaki shell SONAR_SCANNER_HOME ko expand kare, Groovy nahi.
+          sh '''
             ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
               -Dsonar.projectKey=cicode-demo \
               -Dsonar.sources=src \
               -Dsonar.tests=test \
               -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          """
+          '''
         }
       }
     }
@@ -56,8 +57,7 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        // ✅ Yahan ${IMAGE_NAME} ko $IMAGE_NAME kar diya hai
-        // aur double quotes ko single quotes, taaki shell handle kare
+        // Yeh $IMAGE_NAME shell se aayega, jo sahi hai
         sh 'docker build -t $IMAGE_NAME:latest .'
       }
     }
@@ -67,8 +67,6 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-            
-            # ✅ Yahan bhi ${IMAGE_NAME} ko $IMAGE_NAME kar diya hai
             docker push $IMAGE_NAME:latest
           '''
         }
@@ -79,8 +77,6 @@ pipeline {
       steps {
         sh '''
           docker rm -f cicode-demo || true
-          
-          # ✅ Yahan bhi ${IMAGE_NAME} ko $IMAGE_NAME kar diya hai
           docker run -d --name cicode-demo -p 3000:3000 $IMAGE_NAME:latest
         '''
       }
