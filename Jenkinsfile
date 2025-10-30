@@ -3,7 +3,8 @@ pipeline {
 
   environment {
     DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
-    SONARQUBE_NAME = 'MySonarQube'
+    // Yeh naam aapke Tool aur Server, dono config se match karta hai
+    SONARQUBE_NAME = 'MySonarQube' 
     IMAGE_NAME = 'rijul0408/cicode-demo'
   }
 
@@ -31,9 +32,10 @@ pipeline {
       steps {
         script {
           // 1. Jenkins se 'MySonarQube' tool ka path maango
+          // Jenkins pehle isse automatically install karega
           def scannerHome = tool 'MySonarQube'
           
-          // 2. withSonarQubeEnv ko server details ke liye use karo
+          // 2. withSonarQubeEnv ko server connection ke liye use karo
           withSonarQubeEnv('MySonarQube') {
             
             // 3. sh ko double-quotes (""") mein daalo
@@ -65,6 +67,7 @@ pipeline {
 
     stage('Docker Build') {
       steps {
+        // $IMAGE_NAME shell variable use karega (syntax error se bachne ke liye)
         sh 'docker build -t $IMAGE_NAME:latest .'
       }
     }
