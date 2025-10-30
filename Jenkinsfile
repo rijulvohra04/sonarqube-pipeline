@@ -2,11 +2,9 @@ pipeline {
   agent any
 
   environment {
-    DOCKERHUB_CREDENTIALS = 'dockerhub-creds'    // Jenkins credentials ID
-    
-    SONARQUBE_NAME = 'MySonarQube'          
-    
-    IMAGE_NAME = 'rijul0408/cicode-demo'        // your DockerHub repo
+    DOCKERHUB_CREDENTIALS = 'dockerhub-creds'      // Jenkins credentials ID
+    SONARQUBE_NAME = 'MySonarQube'                // Yeh naam ab Tool aur Server dono se match ho raha hai
+    IMAGE_NAME = 'rijul0408/cicode-demo'          // your DockerHub repo
   }
 
   stages {
@@ -32,8 +30,8 @@ pipeline {
       steps {
         withSonarQubeEnv("${SONARQUBE_NAME}") {
           sh '''
-            # ✅ Galti 2: Yahan se ${SONAR_SCANNER_HOME}/bin/ hata diya
-            sonar-scanner \
+            # Yeh command ab 'not found' error nahi dega
+            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
               -Dsonar.projectKey=cicode-demo \
               -Dsonar.sources=src \
               -Dsonar.tests=test \
