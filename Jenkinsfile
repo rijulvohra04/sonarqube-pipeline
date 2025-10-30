@@ -28,14 +28,18 @@ pipeline {
 
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv("${SONARQUBE_NAME}") {
-          sh 
-            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-              -Dsonar.projectKey=cicode-demo \
-              -Dsonar.sources=src \
-              -Dsonar.tests=test \
-              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          
+        script {
+          def scannerHome = tool 'MySonarQube'
+        
+          withSonarQubeEnv('MySonarQube') {
+            sh 
+              ${scannerHome}/bin/sonar-scanner \
+                -Dsonar.projectKey=cicode-demo \
+                -Dsonar.sources=src \
+                -Dsonar.tests=test \
+                -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            
+          }
         }
       }
     }
