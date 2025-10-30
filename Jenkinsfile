@@ -27,19 +27,19 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
-     steps {
-      withSonarQubeEnv("${SONARQUBE_NAME}") {
-      sh '''
-        ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-          -Dsonar.projectKey=cicode-demo \
-          -Dsonar.sources=src \
-          -Dsonar.tests=test \
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-      '''
+      steps {
+        withSonarQubeEnv("${SONARQUBE_NAME}") {
+          // ✅ use Jenkins’ built-in SonarQube Scanner automatically
+          sh '''
+            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+              -Dsonar.projectKey=cicode-demo \
+              -Dsonar.sources=src \
+              -Dsonar.tests=test \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          '''
+        }
+      }
     }
-  }
-}
-
 
     stage("Wait For Quality Gate") {
       steps {
