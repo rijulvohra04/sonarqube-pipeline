@@ -4,7 +4,7 @@ pipeline {
   environment {
     DOCKERHUB_CREDENTIALS = 'dockerhub-creds'    // Jenkins credentials ID
     
-    SONARQUBE_NAME = 'SonarScanner'          
+    SONARQUBE_NAME = 'MySonarQube'          
     
     IMAGE_NAME = 'rijul0408/cicode-demo'        // your DockerHub repo
   }
