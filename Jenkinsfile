@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   tools {
-    sonarQube 'SonarScanner'       // 👈 this tells Jenkins to use your configured scanner
+    hudson.plugins.sonar.SonarRunnerInstallation 'SonarScanner'       // 👈 this tells Jenkins to use your configured scanner
   }
 
   environment {
