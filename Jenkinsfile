@@ -2,9 +2,11 @@ pipeline {
   agent any
 
   environment {
-    DOCKERHUB_CREDENTIALS = 'dockerhub-creds'      // Jenkins credentials ID
-    SONARQUBE_NAME = 'MySonarQube'                 // name from Manage Jenkins > Configure System
-    IMAGE_NAME = 'rijul0408/cicode-demo'           // your DockerHub repo
+    DOCKERHUB_CREDENTIALS = 'dockerhub-creds'    // Jenkins credentials ID
+    
+    SONARQUBE_NAME = 'SonarScanner'          
+    
+    IMAGE_NAME = 'rijul0408/cicode-demo'        // your DockerHub repo
   }
 
   stages {
@@ -29,9 +31,9 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv("${SONARQUBE_NAME}") {
-          // ✅ use Jenkins’ built-in SonarQube Scanner automatically
           sh '''
-            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+            # ✅ Galti 2: Yahan se ${SONAR_SCANNER_HOME}/bin/ hata diya
+            sonar-scanner \
               -Dsonar.projectKey=cicode-demo \
               -Dsonar.sources=src \
               -Dsonar.tests=test \
