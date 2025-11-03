@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarScanner 'MySonarQube'
-    }
-
     stages {
         stage('Checkout SCM') {
             steps {
