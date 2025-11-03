@@ -22,12 +22,6 @@ pipeline {
             }
         }
         
-        stage('Test Network Connection') {
-            steps {
-                sh 'curl http://sonarqube:9000'
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('MySonarQube') {
