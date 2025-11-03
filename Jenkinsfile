@@ -24,7 +24,7 @@ pipeline {
         
         stage('Test Network Connection') {
             steps {
-                sh 'curl http://host.docker.internal:9000'
+                sh 'curl http://sonarqube:9000'
             }
         }
 
