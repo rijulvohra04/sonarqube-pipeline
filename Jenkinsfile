@@ -3,7 +3,6 @@ pipeline {
 
   environment {
     DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
-    // Yeh naam aapke Tool aur Server, dono config se match karta hai
     SONARQUBE_NAME = 'MySonarQube' 
     IMAGE_NAME = 'rijul0408/cicode-demo'
   }
@@ -27,19 +26,13 @@ pipeline {
       }
     }
 
-    // ✅ YEH STAGE AAPKI PROBLEM FIX KAR DEGA
     stage('SonarQube Analysis') {
       steps {
         script {
-          // 1. Jenkins se 'MySonarQube' tool ka path maango
-          // Jenkins pehle isse automatically install karega
           def scannerHome = tool 'MySonarQube'
           
-          // 2. withSonarQubeEnv ko server connection ke liye use karo
           withSonarQubeEnv('MySonarQube') {
             
-            // 3. sh ko double-quotes (""") mein daalo
-            //    taaki Groovy ${scannerHome} variable ko process kar paaye
             sh """
               ${scannerHome}/bin/sonar-scanner \
                 -Dsonar.projectKey=cicode-demo \
@@ -67,7 +60,6 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        // $IMAGE_NAME shell variable use karega (syntax error se bachne ke liye)
         sh 'docker build -t $IMAGE_NAME:latest .'
       }
     }
@@ -92,6 +84,11 @@ pipeline {
       }
     }
   }
+    stage('Test Network Connection') {
+      steps {
+        sh 'curl http://host.docker.internal:9000'
+    }
+}
 
   post {
     always {
